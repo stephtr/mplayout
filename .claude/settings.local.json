@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install *)",
+      "Bash(python -m pytest test_grid.py -q)",
+      "Bash(python3 -m pytest test_grid.py -q)",
+      "Bash(MPLBACKEND=Agg python3 examples/basic.py)",
+      "Bash(MPLBACKEND=Agg python3 examples/mixed_sizing.py)",
+      "Bash(MPLBACKEND=Agg python3 examples/subgrid.py)",
+      "Bash(python3 -m pytest tests/ -q)"
+    ]
+  }
+}

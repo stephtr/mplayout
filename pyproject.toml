@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mplayout"
+version = "0.1.0"
+description = "Constraint-based matplotlib figure layout"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Stephan Troyer", email = "work@madebystephan.com" }]
+requires-python = ">=3.9"
+dependencies = ["matplotlib", "numpy"]
+keywords = ["matplotlib", "layout", "figure", "grid", "plotting"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+
+[project.urls]
+Homepage = "https://github.com/stephtr/mplayout"
+Repository = "https://github.com/stephtr/mplayout"
+"Bug Tracker" = "https://github.com/stephtr/mplayout/issues"
