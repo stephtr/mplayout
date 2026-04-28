@@ -79,10 +79,16 @@ Create one panel per cell and return them as `panels[row][col]`.
 Nest a child grid inside the given cell(s). Returns the child `Grid`, which
 supports the same `panel()`, `fill()`, and `subgrid()` calls.
 
-### `Grid.build(fig_width, fig_height=None) → (Figure, dict[Panel, Axes])`
+### `Grid.build(fig_width, fig_height=None, n_iter=1) → (Figure, dict[Panel, Axes])`
 
 Solve the layout and create the figure. `fig_width` is required and must be a
 fixed size. `fig_height` is inferred when omitted (not allowed for `'fr'` rows).
+
+- **`n_iter`** — number of layout passes the engine runs per draw call. The
+  default of `1` is sufficient for most layouts. Use `2`–`3` when tick labels
+  or other decorations shift the layout enough that a second measurement
+  produces noticeably different gaps. The engine stops early once the layout
+  has converged.
 
 ## Examples
 

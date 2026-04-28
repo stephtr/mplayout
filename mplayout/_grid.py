@@ -324,6 +324,7 @@ class Grid:
         self,
         fig_width: SizeSpec,
         fig_height: Optional[SizeSpec] = None,
+        n_iter: int = 1,
     ) -> Tuple[plt.Figure, Dict[Panel, plt.Axes]]:
         """
         Solve the layout and create a matplotlib figure.
@@ -336,6 +337,11 @@ class Grid:
             Figure height.  When *None* (default) the height is derived from
             the row sizes and aspect constraints.  Must be given if any root
             row uses ``'fr'`` sizing.
+        n_iter:
+            Number of layout passes the engine runs per draw.  One pass is
+            usually sufficient; use 2–3 when labels shift the layout enough
+            that a second measurement produces noticeably different gaps.
+            The engine stops early if the layout has already converged.
 
         Returns
         -------
@@ -412,6 +418,7 @@ class Grid:
             col_right=col_right,
             row_bot=row_bot,
             row_top=row_top,
+            n_iter=n_iter,
         )
         fig.set_layout_engine(engine)
         return fig, axes_map
@@ -775,6 +782,7 @@ class GridLayoutEngine(LayoutEngine):
         col_right: np.ndarray,
         row_bot: np.ndarray,
         row_top: np.ndarray,
+        n_iter: int = 1,
     ) -> None:
         super().__init__()
         self._adjust_compatible = False
@@ -791,6 +799,7 @@ class GridLayoutEngine(LayoutEngine):
         self._col_right = col_right
         self._row_bot   = row_bot
         self._row_top   = row_top
+        self._n_iter    = n_iter
         # Cache
         self._last_fig_size: Optional[Tuple[float, float]] = None
         self._last_eff_hgaps: Optional[Tuple[float, ...]] = None
@@ -805,7 +814,12 @@ class GridLayoutEngine(LayoutEngine):
             renderer = fig._get_renderer()  # type: ignore[attr-defined]
         except AttributeError:
             return  # backend has no renderer; skip
+        for _ in range(self._n_iter):
+            if not self._step(fig, renderer):
+                break  # layout converged; no need for further passes
 
+    def _step(self, fig: Any, renderer: Any) -> bool:
+        """Run one layout pass. Returns True if a re-solve happened."""
         dpi = fig.dpi
         fig_w, fig_h = fig.get_size_inches()
         tol = 1e-3  # inches
@@ -827,7 +841,7 @@ class GridLayoutEngine(LayoutEngine):
         bot_into_gap:   List[List[float]] = [[] for _ in range(nr - 1)]
         top_into_gap:   List[List[float]] = [[] for _ in range(nr - 1)]
 
-        for _, ax in self._axes_panels.items():
+        for ax in fig.axes:
             tight = ax.get_tightbbox(renderer)
             if tight is None:
                 continue
@@ -838,17 +852,18 @@ class GridLayoutEngine(LayoutEngine):
             oh_bottom = max(0.0, (frame.y0 - tight.y0) / dpi)
             oh_top    = max(0.0, (tight.y1 - frame.y1) / dpi)
 
+            # Outer margins: measure how far the tight bbox extends past the
+            # content boundary, for every axis regardless of which track it is in.
+            left_margin_oh.append(max(0.0,  col_left[0]     - tight.x0 / dpi))
+            right_margin_oh.append(max(0.0, tight.x1 / dpi  - col_right[nc - 1]))
+            bot_margin_oh.append(max(0.0,   row_bot[nr - 1] - tight.y0 / dpi))
+            top_margin_oh.append(max(0.0,   tight.y1 / dpi  - row_top[0]))
+
             pos      = ax.get_position()
             ax_left  = pos.x0 * fig_w
             ax_right = (pos.x0 + pos.width)  * fig_w
             ax_bot   = pos.y0 * fig_h
             ax_top   = (pos.y0 + pos.height) * fig_h
-
-            # Margin slots
-            if abs(ax_left  - col_left[0])       < tol: left_margin_oh.append(oh_left)
-            if abs(ax_right - col_right[nc - 1]) < tol: right_margin_oh.append(oh_right)
-            if abs(ax_bot   - row_bot[nr - 1])   < tol: bot_margin_oh.append(oh_bottom)
-            if abs(ax_top   - row_top[0])        < tol: top_margin_oh.append(oh_top)
 
             # Column-gap slots
             for j in range(nc - 1):
@@ -886,7 +901,7 @@ class GridLayoutEngine(LayoutEngine):
                 and eff_hgaps_t  == self._last_eff_hgaps
                 and eff_wgaps_t  == self._last_eff_wgaps
                 and eff_margin   == self._last_eff_margin):
-            return
+            return False
 
         # Re-solve with effective gaps/margins
         current_fh = None if self._fh_auto else fig_h
@@ -913,7 +928,7 @@ class GridLayoutEngine(LayoutEngine):
         if self._fh_auto:
             fig.set_size_inches(self._fw, new_fh)
 
-        # Update boundary arrays for the next execute() call
+        # Update boundary arrays for the next _step() call
         self._col_left, self._col_right, self._row_bot, self._row_top = (
             self._grid._compute_boundaries(x, eff_hgaps, eff_wgaps, eff_margin)
         )
@@ -924,3 +939,4 @@ class GridLayoutEngine(LayoutEngine):
         self._last_eff_hgaps = eff_hgaps_t
         self._last_eff_wgaps = eff_wgaps_t
         self._last_eff_margin = eff_margin
+        return True
