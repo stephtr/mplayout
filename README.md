@@ -9,7 +9,7 @@ panel lands exactly where you specify — no post-hoc `tight_layout` surprises.
 ## Installation
 
 ```bash
-pip install -e .          # editable install from this directory
+pip install mplayout
 ```
 
 Dependencies: `matplotlib`, `numpy`.
@@ -88,17 +88,9 @@ fixed size. `fig_height` is inferred when omitted (not allowed for `'fr'` rows).
 
 | File | What it shows |
 |---|---|
-| [examples/basic.py](examples/basic.py) | Two square panels side by side with a gap and margin |
-| [examples/mixed_sizing.py](examples/mixed_sizing.py) | Fixed header row, fractional body row, auto-sized image columns |
-| [examples/subgrid.py](examples/subgrid.py) | 2×2 image grid nested inside one cell of a larger layout |
-
-Run any example from the project root:
-
-```bash
-python3 examples/basic.py
-```
-
-Each script saves a PNG next to itself.
+| [examples/basic.ipynb](examples/basic.ipynb) | Two square panels side by side with a gap and margin |
+| [examples/mixed_sizing.ipynb](examples/mixed_sizing.ipynb) | Fixed header row, fractional body row, auto-sized image columns |
+| [examples/subgrid.ipynb](examples/subgrid.ipynb) | 2×2 image grid nested inside one cell of a larger layout |
 
 ---
 
