@@ -17,7 +17,7 @@ from mplayout import Grid
 
 rng = np.random.default_rng(0)
 
-g = Grid(rows=['auto'], cols=['auto', 'auto'], gap='4mm', margin='5mm')
+g = Grid(rows=['auto'], cols=['auto', 'auto'], gap='10mm')
 p_left  = g.panel(row=0, col=0, aspect=1.0)
 p_right = g.panel(row=0, col=1, aspect=1.0)
 

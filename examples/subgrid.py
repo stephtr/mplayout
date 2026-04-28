@@ -3,13 +3,13 @@ subgrid.py — 2×2 image grid nested inside one cell of a larger layout.
 
 Layout
 ------
-  ┌──────────────┬──────────┐
-  │  A │  B      │ colorbar │
-  ├────┼────     │          │
-  │  C │  D      │          │
-  ├────────────────────────-┤
-  │        data panel       │
-  └─────────────────────────┘
+  ┌───────┬──────────┐
+  │ A │ B │          │
+  ├───┼───│ colorbar │
+  │ C │ D │          │
+  ├─────────────────-┤
+  │    data panel    │
+  └──────────────────┘
 
 The 2×2 block (A–D) lives in a subgrid that occupies (row=0, col=0) of the
 parent.  The parent's col=1 is narrow and holds a colorbar placeholder; col=2
@@ -24,9 +24,10 @@ rng = np.random.default_rng(2)
 
 # Parent grid: two content rows separated by a gap row, plus a sidebar column
 g = Grid(
-    rows=['auto', '4mm', 'auto'],
-    cols=['auto', '5mm', '0.15in'],
-    margin='5mm',
+    rows=['auto', 'auto'],
+    cols=['auto', '0.15in'],
+    hgap='12mm',
+    wgap='2mm',
 )
 
 # 2×2 subgrid in the top-left cell
@@ -37,12 +38,12 @@ p_c = sub.panel(row=1, col=0, aspect=1.0)
 p_d = sub.panel(row=1, col=1, aspect=1.0)
 
 # Colorbar slot — spans both sub-rows by spanning the parent's row=0
-p_cb = g.panel(row=0, col=2)
+p_cb = g.panel(row=0, col=1)
 
 # Wide data panel at the bottom
-p_data = g.panel(row=2, col=0, colspan=3)
+p_data = g.panel(row=1, col=0, colspan=2)
 
-fig, axes = g.build(fig_width='4in', fig_height='4in')
+fig, axes = g.build(fig_width='4in', fig_height='5in')
 
 images = {'A': p_a, 'B': p_b, 'C': p_c, 'D': p_d}
 cmap = plt.cm.viridis

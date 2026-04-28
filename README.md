@@ -102,4 +102,5 @@ Each script saves a PNG next to itself.
 
 ---
 
-Built with [Claude Code](https://claude.ai/code).
+## Disclamer
+This package was built with Claude Code.

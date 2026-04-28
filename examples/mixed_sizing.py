@@ -24,7 +24,7 @@ rng = np.random.default_rng(1)
 g = Grid(
     rows=['0.35in', '1fr'],
     cols=['1fr', '2fr'],
-    wgap='5mm', hgap='3mm', margin='5mm',
+    wgap='20mm', hgap='3mm',
 )
 
 p_title = g.panel(row=0, col=0, colspan=2)
